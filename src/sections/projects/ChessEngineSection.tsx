@@ -1,75 +1,72 @@
+import { CSSProperties, useRef } from "react";
+import useScrollPercentage from "../../hooks/useScrollPercentage";
+import { getStyles } from "../../util/getStyles";
 import { Canvas } from "@react-three/fiber";
-import { CSSProperties, useEffect, useRef, useState } from "react";
 import ChessBoard from "../../components/models/ChessBoard";
-import { useDistanceFromTop } from "../../hooks/useDistanceFromTop";
+import { chessAnimations } from "./chessEngineSection.animation";
 
 type Props = {};
 
 export default function ChessEngineSection({}: Props) {
   const ref = useRef<HTMLDivElement>(null);
-  const distanceFromTop = useDistanceFromTop(ref);
+  const ref1 = useRef<HTMLDivElement>(null);
 
-  const [boardPosition, setBoardPosition] = useState(0);
+  const scrollPercentage = useScrollPercentage(ref);
+  const scrollPercentage1 = useScrollPercentage(ref1);
 
-  const [boardStyle, setBoardStyle] = useState({} as CSSProperties);
-  const [titleStyle, setTitleStyle] = useState({} as CSSProperties);
+  const titleStyle = {
+    position: "fixed",
+    textAlign: "center",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontSize: "15rem",
+    zIndex: 1,
+    ...getStyles(chessAnimations.title, scrollPercentage),
+  } as CSSProperties;
 
-  useEffect(() => {
-    const updateBoardPosition = () => {
-      const startingPosition = 0;
-      const endingPosition = 5;
+  const canvasStyle = {
+    top: 0,
+    height: "100vh",
+    width: "100vw",
+    zIndex: 2,
+    ...getStyles(chessAnimations.canvas, scrollPercentage),
+  } as CSSProperties;
 
-      const percent = distanceFromTop / window.innerHeight;
-      let position = percent * (endingPosition - startingPosition);
-      position = Math.min(position, startingPosition);
-
-      const styles = { position: "relative", top: 0 } as CSSProperties;
-      if (distanceFromTop < 0) styles.position = "fixed";
-
-      setBoardPosition(position);
-      setBoardStyle(styles);
-    };
-
-    const updateTitlePosition = () => {
-      const startingScale = 1;
-      const endingScale = 0.5;
-
-      const percent = distanceFromTop / (window.innerHeight * -2);
-
-      let scale = percent * (endingScale - startingScale);
-      scale = Math.abs(scale);
-      scale = Math.min(scale, startingScale);
-
-      const styles = {
-        position: "relative",
-        top: "50%",
-        transform: "translateY(-50%) scale(" + scale + ")",
-        fontSize: "10rem",
-        color: "black",
-        textAlign: "center",
-      } as CSSProperties;
-
-      if (distanceFromTop < 0) styles.position = "fixed";
-
-      setTitleStyle(styles);
-    };
-
-    updateBoardPosition();
-    updateTitlePosition();
-  }, [distanceFromTop]);
+  const galleryStyle = {
+    display: "flex",
+    top: "0",
+    // right: "-100%",
+    height: "100vh",
+    width: "100vw",
+    ...getStyles(chessAnimations.gallery, scrollPercentage1),
+  } as CSSProperties;
 
   return (
-    <div style={{ height: "400dvh", width: "100dvw" }} ref={ref}>
-      <div style={{ ...boardStyle, zIndex: 100 }}>
-        <Canvas style={{ height: "100dvh", width: "100dvw" }}>
-          <ambientLight intensity={2.55} />
-          <ChessBoard position={[boardPosition, 0, 0]} />
-        </Canvas>
-      </div>
+    <>
+      <div
+        style={{ height: "200dvh", width: "100dvw", position: "relative" }}
+        ref={ref}
+      >
+        <div style={canvasStyle}>
+          <Canvas camera={{ position: [0, 0, 7] }}>
+            <ambientLight intensity={2.55} />
+            <ChessBoard rotation={[2, 0, 0]} />
+          </Canvas>
+        </div>
 
-      <div style={{ ...titleStyle, zIndex: 10 }}>
-        <h1>Chess Engine</h1>
+        <div style={titleStyle}>
+          <div className="h1">Chess</div>
+          <div className="h1">Engine</div>
+        </div>
       </div>
-    </div>
+      <div style={{ height: "200dvh", width: "100dvw" }} ref={ref1}>
+        <div style={galleryStyle}>
+          <img src="/assets/chessEngine/chess1.png" />
+          <img src="/assets/chessEngine/chess2.png" />
+          <img src="/assets/chessEngine/chess3.png" />
+        </div>
+      </div>
+    </>
   );
 }
