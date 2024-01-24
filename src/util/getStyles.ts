@@ -32,28 +32,33 @@ export function getStyle(animation: AnimationType, scrollPercentage: number) {
     additionalStyles,
   } = animation;
 
-  if (typeof from === "number" && typeof to === "number") {
-    if (scrollPercentage >= start && scrollPercentage <= end!) {
-      if (transitionType === "sudden") {
-        if (suffix) return { [style]: `${to}${suffix}`, ...additionalStyles };
-        return { [style]: to, ...additionalStyles };
-      }
+  const getStyle = (value: number | string) => {
+    if (suffix) return { [style]: `${value}${suffix}`, ...additionalStyles };
+    return { [style]: value, ...additionalStyles };
+  };
 
-      const value =
-        from + ((to - from) * (scrollPercentage - start!)) / (end! - start);
+  const handleNumber = () => {
+    if (scrollPercentage < start) return {};
+    if (scrollPercentage > end!) return getStyle(to);
 
-      if (suffix) return { [style]: `${value}${suffix}`, ...additionalStyles };
-      return { [style]: value, ...additionalStyles };
-    }
-  }
+    if (transitionType === "sudden") return getStyle(to);
 
-  if (scrollPercentage >= start) {
-    if (suffix) return { [style]: `${to}${suffix}`, ...additionalStyles };
-    return { [style]: to, ...additionalStyles };
-  }
+    const fromValue = from as number;
+    const toValue = to as number;
 
-  if (suffix) return { [style]: `${from}${suffix}` };
-  return { [style]: from };
+    const value =
+      fromValue +
+      ((toValue - fromValue) * (scrollPercentage - start)) / (end! - start);
+
+    return getStyle(value);
+  };
+
+  if (typeof from === "number" && typeof to === "number") return handleNumber();
+
+  if (scrollPercentage < start) return {};
+  if (scrollPercentage > end!) return getStyle(to);
+
+  return getStyle(to);
 }
 
 export function getStyles(
