@@ -1,6 +1,6 @@
 import { AnimationType } from "../../util/getStyles";
 
-const sectionCount = 9;
+const sectionCount = 4;
 export const chessAnimations = {
   canvas: [
     {
@@ -66,32 +66,33 @@ export const chessAnimations = {
     },
     {
       start: 3 / sectionCount,
-      end: 4 / sectionCount,
       to: "fixed",
       style: "position",
     },
-  ],
-
-  image1: [],
-  image2: [
     {
       start: 3 / sectionCount,
       end: 4 / sectionCount,
-      from: 100,
-      to: 25,
-      suffix: "vh",
-      style: "top",
+      from: 0,
+      to: 200,
+      suffix: "%",
+      style: "right",
     },
   ],
 
-  image3: [
+  boardRotation: [
     {
-      start: 3 / sectionCount,
-      end: 4 / sectionCount,
-      from: 200,
-      to: 50,
-      suffix: "vh",
-      style: "top",
+      start: 0,
+      end: 1 / sectionCount,
+      from: Math.PI / 4,
+      to: Math.PI / 2,
+      style: "x",
+    },
+    {
+      start: 0,
+      end: 1 / sectionCount,
+      from: 0,
+      to: 2,
+      style: "y",
     },
   ],
 } as Record<string, AnimationType[]>;

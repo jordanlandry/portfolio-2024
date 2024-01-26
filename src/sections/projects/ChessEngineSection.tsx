@@ -35,63 +35,61 @@ export default function ChessEngineSection({}: Props) {
 
   const galleryStyle = {
     display: "flex",
-    flexDirection: "column",
     justifyContent: "center",
+    flexDirection: "column",
+    width: "100vw",
     top: "0",
     opacity: "0",
+    padding: "24px",
     ...getStyles(chessAnimations.gallery, scrollPercentage),
   } as CSSProperties;
 
-  const imgWidth = "25vw";
+  const baseImgStyles = { height: "66vh" };
+  const spotlight = useMemo(() => new SpotLight("#ffdddd"), []);
+  const chessBoardModel = useLoader(GLTFLoader, "/models/chess/scene.gltf");
 
-  const img1Style = {
-    width: imgWidth,
-    ...getStyles(chessAnimations.image1, scrollPercentage),
-  } as CSSProperties;
+  const chessBoardRotation = getStyles(
+    chessAnimations.boardRotation,
+    scrollPercentage
+  ) as { x?: number; y?: number; z?: number };
 
-  const img2Style = {
-    width: imgWidth,
-    position: "fixed",
-    top: "100vh",
-    ...getStyles(chessAnimations.image2, scrollPercentage),
-  } as CSSProperties;
-
-  const img3Style = {
-    width: imgWidth,
-    position: "fixed",
-    top: "200vh",
-    ...getStyles(chessAnimations.image3, scrollPercentage),
-  } as CSSProperties;
-
-  const spotlight = useMemo(() => new SpotLight("#fff"), []);
-
-  const gltf = useLoader(GLTFLoader, "/models/chess/scene.gltf");
+  const boardRotationVector = [
+    chessBoardRotation?.x || Math.PI / 4,
+    chessBoardRotation?.y || 0,
+    chessBoardRotation?.z || 0,
+  ];
 
   return (
     <>
       <div
-        style={{ height: "900dvh", width: "100dvw", position: "relative" }}
+        style={{
+          height: "400dvh",
+          width: "100dvw",
+          position: "relative",
+          overflowY: "hidden",
+        }}
         ref={ref}
       >
         <div style={canvasStyle}>
           <Canvas camera={{ position: [0, 0, 2] }}>
             <Suspense fallback={null} />
 
-            <group>
+            <group scale={[0.1, 0.1, 0.1]}>
               <primitive
                 object={spotlight}
-                position={[0, 0, 5]}
+                position={[0, 5, 10]}
                 intensity={250}
                 penumbra={0.5}
                 castShadow
                 angle={Math.PI / 2}
+                decay={5}
               />
             </group>
 
             <primitive
-              object={gltf.scene}
-              scale={[10, 10, 10]}
-              rotation={[Math.PI / 2, 0, 0]}
+              object={chessBoardModel.scene}
+              scale={[8, 8, 8]}
+              rotation={boardRotationVector as [number, number, number]}
             />
           </Canvas>
         </div>
@@ -103,28 +101,25 @@ export default function ChessEngineSection({}: Props) {
           <div className="h1">Engine</div>
         </div>
         <div style={galleryStyle}>
-          <img src="/assets/chessEngine/chess1.png" style={img1Style} />
-          <div style={{ height: "100vh" }}></div>
-          <img src="/assets/chessEngine/chess2.png" style={img2Style} />
-          <div style={{ height: "100vh" }}></div>
-          <img src="/assets/chessEngine/chess3.png" style={img3Style} />
-
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum atque
-            fuga deleniti! Recusandae sunt, possimus illo, asperiores delectus
-            aliquid neque consequuntur magnam rem beatae perspiciatis.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum atque
-            fuga deleniti! Recusandae sunt, possimus illo, asperiores delectus
-            aliquid neque consequuntur magnam rem beatae perspiciatis.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum atque
-            fuga deleniti! Recusandae sunt, possimus illo, asperiores delectus
-            aliquid neque consequuntur magnam rem beatae perspiciatis.
-          </p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2rem",
+            }}
+          >
+            <img src="/assets/chessEngine/chess1.png" style={baseImgStyles} />
+            <img src="/assets/chessEngine/chess2.png" style={baseImgStyles} />
+            <img src="/assets/chessEngine/chess3.png" style={baseImgStyles} />
+            <img src="/assets/chessEngine/chess.gif" style={baseImgStyles} />
+          </div>
         </div>
+        <p style={{ fontSize: "2rem" }}>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum atque
+          fuga deleniti! Recusandae sunt, possimus illo, asperiores delectus
+          aliquid neque consequuntur magnam rem beatae perspiciatis.
+        </p>
+        <div style={{ height: "200dvh", width: "100dvw" }}></div>
       </div>
     </>
   );
